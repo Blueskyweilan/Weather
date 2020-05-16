@@ -3,12 +3,13 @@ package com.readboy.weather;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-@SuppressWarnings("ALL")
+
 public class MainActivity extends AppCompatActivity implements View.OnClickListener {
     private TextView tv_area;
     private ImageView iv_search;
@@ -27,7 +28,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         init();
-
     }
 
     private void init(){
@@ -43,15 +43,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tv_china_weather=(TextView)findViewById(R.id.tv_china_weather);
         tv_refresh=(TextView)findViewById(R.id.tv_refresh);
 
-        tv_area.setOnClickListener(this);
         iv_city_list.setOnClickListener(this);
         iv_search.setOnClickListener(this);
-        tv_date.setOnClickListener(this);
-        tv_date1.setOnClickListener(this);
-        tv_date2.setOnClickListener(this);
-        tv_date_information.setOnClickListener(this);
-        tv_date1_information.setOnClickListener(this);
-        tv_date2_information.setOnClickListener(this);
         tv_china_weather.setOnClickListener(this);
         tv_refresh.setOnClickListener(this);
     }
@@ -60,17 +53,21 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void onClick(View view){
         switch (view.getId()){
             case R.id.iv_city_list:
-                //
                 break;
             case R.id.iv_search:
-//                Intent intent=new Intent(MainActivity.this,)
+                Intent intent=new Intent(MainActivity.this,chooseActivity.class);
+                startActivity(intent);
                 break;
             case R.id.tv_china_weather:
-                //
+                Uri uri = Uri.parse("https://m.weather.com.cn/d/town/index?lat=22.488641&lon=113.418838&areaid=101281701");
+                Intent chinaWeatherIntent = new Intent(Intent.ACTION_VIEW, uri);
+                startActivity(chinaWeatherIntent);
                 break;
             case R.id.tv_refresh:
                 //refresh
                 break;
         }
     }
+
+
 }

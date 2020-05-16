@@ -6,7 +6,7 @@
         <list>
             <mapping class="com.readboy.weather.db.City" />
             <mapping class="com.readboy.weather.db.Country" />
-            <mapping class="com.readboy.weather.db.Prvince" />
+            <mapping class="com.readboy.weather.db.Province" />
         </list>
     </litepal>
 </PreferenceScreen>

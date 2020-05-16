@@ -2,7 +2,7 @@ package com.readboy.weather.db;
 
 import org.litepal.crud.DataSupport;
 
-public class Prvince extends DataSupport {
+public class Province extends DataSupport {
     private int id;
     private String provinceName;
     private int provinceCode;
