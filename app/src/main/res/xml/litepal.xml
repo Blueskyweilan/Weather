@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <litepal>
+        <dbname value="weather" />
+        <version value="1" />
+        <list>
+            <mapping class="com.readboy.weather.db.City" />
+            <mapping class="com.readboy.weather.db.Country" />
+            <mapping class="com.readboy.weather.db.Prvince" />
+        </list>
+    </litepal>
+</PreferenceScreen>
