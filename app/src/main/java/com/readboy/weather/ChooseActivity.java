@@ -4,7 +4,9 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -13,9 +15,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.readboy.weather.CityList.Area;
 import com.readboy.weather.db.City;
 import com.readboy.weather.db.Country;
 import com.readboy.weather.db.Province;
+import com.readboy.weather.gson.Weather;
 import com.readboy.weather.util.HttpUtil;
 import com.readboy.weather.util.Utility;
 
@@ -65,10 +69,11 @@ public class ChooseActivity extends AppCompatActivity {
                     queryCountries();
                 }else if (currentLevel==LEVEL_COUNTRY){
                     String weatherId=countryList.get(position).getWeatherId();
-                    Intent intent=new Intent(ChooseActivity.this,MainActivity.class);
-                    intent.putExtra("weather_id",weatherId);
-                    startActivity(intent);
-                    finish();
+//                    Intent intent=new Intent(ChooseActivity.this,MainActivity.class);
+//                    intent.putExtra("weather_id",weatherId);
+//                    startActivity(intent);
+//                    finish();
+                    saveSelectedWeather(weatherId);
                 }
             }
         });
@@ -143,11 +148,11 @@ public class ChooseActivity extends AppCompatActivity {
     }
 
     private void queryFormServer(String address,final String type){
-        showProgressDialog();
+//        showProgressDialog();
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-                closeProgressDialog();
+//                closeProgressDialog();
                 Toast.makeText(ChooseActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
             }
 
@@ -166,7 +171,7 @@ public class ChooseActivity extends AppCompatActivity {
                     ChooseActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            closeProgressDialog();
+//                            closeProgressDialog();
                             if ("province".equals(type)){
                                 queryProvinces();;
                             }else if ("city".equals(type)){
@@ -181,11 +186,46 @@ public class ChooseActivity extends AppCompatActivity {
         });
     }
 
-    private void showProgressDialog(){
+    public void saveSelectedWeather(final String weatherId){
+        String weatherUrl="http://guolin.tech/api/weather?cityid="+weatherId+"&key=bc0418b57b2d4918819d3974ac1285d9";
 
-    }
+        HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Toast.makeText(ChooseActivity.this,"onFailure获取天气信息失败",Toast.LENGTH_SHORT).show();
+                }
+                });
+            }
 
-    private void closeProgressDialog(){
-
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String responseText = response.body().string();
+                Log.d("ChooseActivity","responseText"+responseText);
+                final Weather weather=Utility.handleWeatherResponse(responseText);
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        if (weather!=null&&"ok".equals(weather.status)){
+                            String degree=weather.now.tmperature+"℃";
+                            String info=weather.now.more.info;
+                            Area area=new Area();
+                            area.setLocal(false);
+                            area.setAreaId(weatherId);
+                            area.setCountry(weather.basic.cityName);
+                            area.setProvince(selectedProvince.getProvinceName());
+                            area.setWeatherData(info+","+degree);
+                            area.save();
+                            Log.d("ChooseActivity","save保存成功"+area.getAreaId()+" "+area.getCountry()+" "+area.getProvince()+" "+area.getWeatherData());
+                        }else {
+                            Toast.makeText(ChooseActivity.this,"onResponse获取天气信息失败",Toast.LENGTH_SHORT).show();
+                        }
+                    }
+                });
+            }
+        });
     }
 }

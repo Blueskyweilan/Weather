@@ -20,6 +20,8 @@ import com.readboy.weather.gson.Weather;
 import com.readboy.weather.util.HttpUtil;
 import com.readboy.weather.util.Utility;
 
+import org.litepal.LitePal;
+
 import java.io.IOException;
 import java.util.List;
 import java.util.Locale;
@@ -92,6 +94,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         tv_china_weather.setOnClickListener(this);
         tv_refresh.setOnClickListener(this);
 
+        LitePal.getDatabase();
     }
 
     @Override

@@ -1,11 +1,14 @@
 package com.readboy.weather.CityList;
 
-public class Area {
+import org.litepal.crud.DataSupport;
+
+public class Area extends DataSupport {
     private String province;
-    private String city;
+
     private String country;
     private String weatherData;
     private boolean isLocal;
+    private String areaId;
 
     public String getProvince() {
         return province;
@@ -15,13 +18,6 @@ public class Area {
         this.province = province;
     }
 
-    public String getCity() {
-        return city;
-    }
-
-    public void setCity(String city) {
-        this.city = city;
-    }
 
     public String getCountry() {
         return country;
@@ -45,5 +41,13 @@ public class Area {
 
     public void setLocal(boolean local) {
         isLocal = local;
+    }
+
+    public String getAreaId() {
+        return areaId;
+    }
+
+    public void setAreaId(String areaId) {
+        this.areaId = areaId;
     }
 }
