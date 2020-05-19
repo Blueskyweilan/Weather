@@ -2,9 +2,11 @@ package com.readboy.weather.util;
 
 import android.text.TextUtils;
 
+import com.google.gson.Gson;
 import com.readboy.weather.db.City;
 import com.readboy.weather.db.Country;
 import com.readboy.weather.db.Province;
+import com.readboy.weather.gson.Weather;
 
 import org.json.*;
 
@@ -67,5 +69,17 @@ public class Utility {
             }
         }
         return false;
+    }
+
+    public static Weather handleWeatherResponse(String response){
+        try {
+            JSONObject jsonObject=new JSONObject(response);
+            JSONArray jsonArray=jsonObject.getJSONArray("HeWeather");
+            String weatherContent=jsonArray.getJSONObject(0).toString();
+            return new Gson().fromJson(weatherContent,Weather.class);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return null;
     }
 }

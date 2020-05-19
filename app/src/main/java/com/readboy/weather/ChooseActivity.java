@@ -3,6 +3,7 @@ package com.readboy.weather;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.app.ProgressDialog;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.AdapterView;
@@ -28,7 +29,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class chooseActivity extends AppCompatActivity {
+public class ChooseActivity extends AppCompatActivity {
     private static final int LEVEL_PROVINCE=0;
     private static final int LEVEL_CITY=1;
     private static final int LEVEL_COUNTRY=2;
@@ -62,6 +63,12 @@ public class chooseActivity extends AppCompatActivity {
                 }else if (currentLevel==LEVEL_CITY){
                     selectedCity=cityList.get(position);
                     queryCountries();
+                }else if (currentLevel==LEVEL_COUNTRY){
+                    String weatherId=countryList.get(position).getWeatherId();
+                    Intent intent=new Intent(ChooseActivity.this,MainActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    finish();
                 }
             }
         });
@@ -141,7 +148,7 @@ public class chooseActivity extends AppCompatActivity {
             @Override
             public void onFailure(Call call, IOException e) {
                 closeProgressDialog();
-                Toast.makeText(chooseActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChooseActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
             }
 
             @Override
@@ -156,7 +163,7 @@ public class chooseActivity extends AppCompatActivity {
                     result = Utility.handleCountriesResponse(responseText,selectedCity.getId());
                 }
                 if (result){
-                    chooseActivity.this.runOnUiThread(new Runnable() {
+                    ChooseActivity.this.runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
                             closeProgressDialog();
