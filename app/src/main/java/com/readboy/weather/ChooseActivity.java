@@ -53,6 +53,7 @@ public class ChooseActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_choose);
+//        Log.d("ChooseActivity",currentLevel+"currentLevel");//初始为0
         tv_title=(TextView)findViewById(R.id.tv_title);
         bt_back=(Button)findViewById(R.id.bt_back);
         lv_area_list=(ListView)findViewById(R.id.lv_area_list);
@@ -73,6 +74,7 @@ public class ChooseActivity extends AppCompatActivity {
 //                    intent.putExtra("weather_id",weatherId);
 //                    startActivity(intent);
 //                    finish();
+                    Log.d("ChooseActivity",weatherId+"");
                     saveSelectedWeather(weatherId);
                 }
             }
@@ -95,6 +97,7 @@ public class ChooseActivity extends AppCompatActivity {
         bt_back.setVisibility(View.GONE);//hint the back button
         provinceList= DataSupport.findAll(Province.class);
         if (provinceList.size()>0){
+            Log.d("ChooseActivity","datalist："+dataList.size());
             dataList.clear();
             for (Province province:provinceList){
                 dataList.add(province.getProvinceName());
@@ -147,18 +150,21 @@ public class ChooseActivity extends AppCompatActivity {
         }
     }
 
-    private void queryFormServer(String address,final String type){
-//        showProgressDialog();
+    private void queryFormServer(final String address, final String type){
         HttpUtil.sendOkHttpRequest(address, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
-//                closeProgressDialog();
                 Toast.makeText(ChooseActivity.this,"加载失败",Toast.LENGTH_SHORT).show();
             }
 
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 String responseText=response.body().string();
+                Log.d("ChooseActivity",address+"的responseText："+responseText);
+                //responseText
+                //[{"id":205,"name":"广州"},{"id":206,"name":"韶关"},{"id":207,"name":"惠州"},{"id":208,"name":"梅州"},{"id":209,"name":"汕头"},{"id":210,"name":"深圳"},{"id":211,"name":"珠海"},{"id":212,"name":"顺德"},{"id":213,"name":"肇庆"},{"id":214,"name":"湛江"},{"id":215,"name":"江门"},{"id":216,"name":"河源"},{"id":217,"name":"清远"},{"id":218,"name":"云浮"},{"id":219,"name":"潮州"},{"id":220,"name":"东莞"},{"id":221,"name":"中山"},{"id":222,"name":"阳江"},{"id":223,"name":"揭阳"},{"id":224,"name":"茂名"},{"id":225,"name":"汕尾"},{"id":350,"name":"佛山"}]
+                //[{"id":1615,"name":"中山","weather_id":"CN101281701"}]
+                //CN101281701
                 boolean result=false;
                 if ("province".equals(type)){
                     result = Utility.handleProvinceResponse(responseText);
@@ -187,8 +193,18 @@ public class ChooseActivity extends AppCompatActivity {
     }
 
     public void saveSelectedWeather(final String weatherId){
+        List<Area> areas=DataSupport.findAll(Area.class);
+        for (Area areaTmp:areas){
+            if (areaTmp.getAreaId().equals(weatherId)){
+                Toast.makeText(ChooseActivity.this,"该城市已在列表中",Toast.LENGTH_SHORT).show();
+                return;
+            }
+        }
+        if (DataSupport.count(Area.class)>5){
+            Toast.makeText(ChooseActivity.this,"城市列表超过5条，不允许再添加",Toast.LENGTH_SHORT).show();
+            return;
+        }
         String weatherUrl="http://guolin.tech/api/weather?cityid="+weatherId+"&key=bc0418b57b2d4918819d3974ac1285d9";
-
         HttpUtil.sendOkHttpRequest(weatherUrl, new Callback() {
             @Override
             public void onFailure(Call call, IOException e) {
@@ -204,7 +220,7 @@ public class ChooseActivity extends AppCompatActivity {
             @Override
             public void onResponse(Call call, Response response) throws IOException {
                 final String responseText = response.body().string();
-                Log.d("ChooseActivity","responseText"+responseText);
+//                Log.d("ChooseActivity","saveSelectedWeather"+responseText);
                 final Weather weather=Utility.handleWeatherResponse(responseText);
                 runOnUiThread(new Runnable() {
                     @Override
@@ -219,7 +235,8 @@ public class ChooseActivity extends AppCompatActivity {
                             area.setProvince(selectedProvince.getProvinceName());
                             area.setWeatherData(info+","+degree);
                             area.save();
-                            Log.d("ChooseActivity","save保存成功"+area.getAreaId()+" "+area.getCountry()+" "+area.getProvince()+" "+area.getWeatherData());
+                            Toast.makeText(ChooseActivity.this,"添加成功",Toast.LENGTH_SHORT).show();
+//                            Log.d("ChooseActivity","save保存成功"+area.getAreaId()+" "+area.getCountry()+" "+area.getProvince()+" "+area.getWeatherData());
                         }else {
                             Toast.makeText(ChooseActivity.this,"onResponse获取天气信息失败",Toast.LENGTH_SHORT).show();
                         }

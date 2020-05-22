@@ -3,6 +3,7 @@ package com.readboy.weather.CityList;
 import org.litepal.crud.DataSupport;
 
 public class Area extends DataSupport {
+    private int id;
     private String province;
 
     private String country;
@@ -49,5 +50,13 @@ public class Area extends DataSupport {
 
     public void setAreaId(String areaId) {
         this.areaId = areaId;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
